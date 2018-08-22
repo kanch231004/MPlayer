@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@drawable/rectangle_4"
+    <item android:drawable="@drawable/selected_dot"
         android:state_selected="true"/>
 
-    <item android:drawable="@drawable/rectangle_4_copy"/>
+    <item android:drawable="@drawable/default_dot"
+        android:state_selected="false"/>
 </selector>

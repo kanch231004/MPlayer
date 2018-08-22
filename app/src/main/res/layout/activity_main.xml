@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".main.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,14 +43,10 @@
         android:layout_height="match_parent"
         android:id="@+id/viewPager"
         android:layout_below="@+id/llAppBar"
+        android:layout_above="@+id/tabLayout"
         />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/flContainer"
-        android:layout_below="@+id/llAppBar"/>
-    
+
     <android.support.design.widget.TabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

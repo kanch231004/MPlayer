@@ -1,6 +1,6 @@
 package com.kanch786.musicapp.api
 import com.google.gson.annotations.SerializedName
-
+import java.io.Serializable
 
 
 data class SongListResults(
@@ -11,6 +11,7 @@ data class SongListResults(
     @SerializedName("amgArtistId") val amgArtistId: Int,
     @SerializedName("artistName") val artistName: String,
     @SerializedName("collectionName") val collectionName: String,
+    @SerializedName("trackName") val trackName : String,
     @SerializedName("collectionCensoredName") val collectionCensoredName: String,
     @SerializedName("artistViewUrl") val artistViewUrl: String,
     @SerializedName("collectionViewUrl") val collectionViewUrl: String,
@@ -26,6 +27,8 @@ data class SongListResults(
     @SerializedName("primaryGenreName") val primaryGenreName: String,
     @SerializedName("previewUrl") val previewUrl: String,
     @SerializedName("description") val description: String
-)
+) : Serializable
 
-data class SongListResponse(@SerializedName("results") var results : ArrayList<SongListResults>)
+data class SongListResponse(
+        @SerializedName("resultCount") val resultCount: Int,
+        @SerializedName("results") val results: List<SongListResults>)
