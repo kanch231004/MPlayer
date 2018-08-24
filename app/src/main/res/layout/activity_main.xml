@@ -27,8 +27,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/etSearchSong"
-            android:layout_margin="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:padding="15dp"
+            android:transitionName="@string/search_song_hint"
+            android:textSize="13sp"
             android:drawablePadding="10dp"
             android:drawableStart="@drawable/search"
             android:background="@color/colorAccent"
@@ -36,25 +40,38 @@
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvCount"
+        android:layout_margin="7dp"
+        android:layout_below="@+id/llAppBar"
+        android:gravity="center"
+        android:textSize="12sp"
+
+        android:layout_marginStart="10dp"
+        android:text="All Songs 24"
+        tools:text="All Songs 24"/>
 
 
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/viewPager"
-        android:layout_below="@+id/llAppBar"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvCount"
         android:layout_above="@+id/tabLayout"
+        android:id="@+id/viewPager"
         />
-
-
     <android.support.design.widget.TabLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom"
         android:layout_alignParentBottom="true"
+        android:background="@color/colorTransparent"
         app:tabBackground="@drawable/tab_selector"
         app:tabGravity="center"
-        app:tabIndicatorHeight="0dp"
+        app:tabIndicatorColor="@color/colorTransparent"
         android:id="@+id/tabLayout"/>
+
 
 
 

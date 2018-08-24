@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="@dimen/cvSongsHeightWithMargin"
+    android:layout_marginBottom="@dimen/cardMarginBottom"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cvSongItem">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:id="@+id/cvSongItem">
+       >
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:id="@+id/ivSong"
             android:src="@drawable/music_placeholder"
             android:scaleType="centerCrop"
@@ -39,6 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvArtistName"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:layout_marginTop="10dp"
                 tools:text="Charlie Puth"/>
 
