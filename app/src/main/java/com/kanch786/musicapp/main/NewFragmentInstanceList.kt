@@ -1,6 +1,7 @@
 package com.kanch786.musicapp.main
 
 import android.os.Bundle
+import android.os.HandlerThread
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -23,9 +24,11 @@ class NewFragmentInstanceList : Fragment() {
 
     companion object Factory {
 
-        fun create(argument : Bundle) : Fragment {
+        fun create(songList : ArrayList<SongListResults>) : Fragment {
 
             val newFragmentInstanceList = NewFragmentInstanceList()
+            val argument = Bundle()
+            argument.putSerializable("songsList",songList)
             newFragmentInstanceList.arguments = argument
             return newFragmentInstanceList
         }
@@ -35,11 +38,9 @@ class NewFragmentInstanceList : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        songsList.clear()
+      arguments?.let { songsList = arguments?.getSerializable("songsList") as ArrayList<SongListResults> }
 
         d("song list in fragment $songsList")
-        arguments?.let { songsList = arguments?.getSerializable("songsList") as ArrayList<SongListResults> }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -51,7 +52,7 @@ class NewFragmentInstanceList : Fragment() {
 
         val layoutManager = LinearLayoutManager(context)
         rvSongs.layoutManager = layoutManager
-        songsList?.let { displaySongList(it)}
+        songsList?.let {  displaySongList(it)}
     }
 
     private fun displaySongList(songList : ArrayList<SongListResults>) {

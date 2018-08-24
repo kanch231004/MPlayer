@@ -23,7 +23,7 @@ class SearchSongVM : ViewModel(){
 
 
                 Log.d("view model","onActive called")
-                ApiInterface.create().getSongResultResponse("jack",18)
+                ApiInterface.create().getSongResultResponse("jack",17)
 
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())

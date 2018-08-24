@@ -21,17 +21,23 @@
             android:src="@drawable/group_2"
             />
 
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/etSearchSong"
-            android:layout_margin="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:padding="15dp"
-            android:focusable="false"
+            android:elevation="5dp"
+            android:transitionName="@string/search_song_hint"
+            android:textSize="13sp"
             android:drawablePadding="10dp"
             android:drawableStart="@drawable/search"
             android:background="@color/colorAccent"
             android:hint="@string/search_song_hint"/>
+
 
         <TextView
             android:layout_width="wrap_content"
