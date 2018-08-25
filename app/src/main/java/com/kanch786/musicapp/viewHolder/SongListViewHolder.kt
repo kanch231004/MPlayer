@@ -23,7 +23,9 @@ class SongListViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
             Glide.with(context).load(songListResults.artworkUrl100).into(ivSong)
 
             itemView.setOnClickListener {
-                context.startActivity(Intent(context,PlaySongActivity::class.java)) }
+                val intent = Intent(context,PlaySongActivity::class.java)
+                intent.putExtra("songName",songListResults)
+                context.startActivity(intent) }
             val displayMetrics = resources.displayMetrics
             d(" height ${cvSongItem.getHeightInDp(displayMetrics)}")
 

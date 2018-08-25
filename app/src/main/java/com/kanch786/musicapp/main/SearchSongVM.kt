@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.util.Log
+import com.google.gson.GsonBuilder
 import com.kanch786.musicapp.api.ApiInterface
 import com.kanch786.musicapp.api.SongListResults
 import com.kanch786.musicapp.extensions.d
@@ -23,7 +24,7 @@ class SearchSongVM : ViewModel(){
 
 
                 Log.d("view model","onActive called")
-                ApiInterface.create().getSongResultResponse("jack",17)
+                ApiInterface.create().getSongResultResponse("jitni dafa",17)
 
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -31,6 +32,7 @@ class SearchSongVM : ViewModel(){
                                 {
 
                                     if (it.isSuccessful) {
+
                                         Log.d("view model","response code ${it.code()}")
                                         Log.d("view model","success called ${it.body()?.results} result count ${it.body()?.resultCount}")
                                         value = it.body()?.results
