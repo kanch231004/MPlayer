@@ -1,31 +1,48 @@
-package com.kanch786.musicapp
+package com.kanch786.musicapp.main.songs
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.kanch786.musicapp.api.SongListResults
-import java.io.Serializable
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.kanch786.musicapp.R
+import com.kanch786.musicapp.dataManager.MPlayerDatabase
+import com.kanch786.musicapp.dataManager.dao.SongListDao
 import com.kanch786.musicapp.extensions.d
+import com.kanch786.musicapp.main.SongsViewModelFactory
+import com.kanch786.musicapp.main.favorites.FavoriteListActivity
+import com.kanch786.musicapp.songRepo
 import kotlinx.android.synthetic.main.activity_play_song.*
 import kotlinx.android.synthetic.main.layout_music_controller_view.*
 
 
 class PlaySongActivity : AppCompatActivity() , Player.EventListener{
+
+    private lateinit var songToPlay  : SongListResults
+    private lateinit var songVM : SongsVM
+    private  var player : SimpleExoPlayer? = null
+    private var playbackPosition : Long? = null
+    private var currentWindow : Int? = null
+    private  var playWhenReady : Boolean = false
+    private lateinit var mPlayerDbInstance  : MPlayerDatabase
+    private lateinit var songListDao : SongListDao
+    private lateinit var songsViewModelFactory: SongsViewModelFactory
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
 
@@ -73,41 +90,90 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
 
     }
 
-    private lateinit var songToPlay  : SongListResults
-    private  var player : SimpleExoPlayer? = null
-    private var playbackPosition : Long? = null
-    private var currentWindow : Int? = null
-    private  var playWhenReady : Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_song)
 
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        mPlayerDbInstance = MPlayerDatabase.getInstance(applicationContext)
+        songsViewModelFactory = SongsViewModelFactory(songRepo)
+        songListDao= mPlayerDbInstance.songsDao()
+        songVM = ViewModelProviders.of(this,songsViewModelFactory).get(SongsVM::class.java)
+        setUpClickListeners()
+
         toolbar.setNavigationIcon(R.drawable.arrow_back)
         songToPlay = intent.getSerializableExtra("songName") as SongListResults
-        togglePlaying()
-        updateView()
-    }
 
-    private fun updateView() {
+      //  togglePlaying()
 
-        tvSongName.text = songToPlay.trackName
-        tvArtistName.text = "${songToPlay.artistName}"
-        Glide.with(this).load(songToPlay.artworkUrl100).into(ivSong)
 
     }
 
-    private fun togglePlaying() {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 
-        flPlayPause.setOnClickListener {
+        menuInflater.inflate(R.menu.play_song_menu,menu)
 
-           playWhenReady = !playWhenReady
-            //ivPlayPause.setImageDrawable(if (playWhenReady) ContextCompat.getDrawable(this,R.drawable.combined_shape_2) else ContextCompat.getDrawable(this,R.drawable.triangle))
-            player?.playWhenReady = playWhenReady
+        return true
+    }
 
-           }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+
+            android.R.id.home-> finish()
+            R.id.favourite -> {
+                startActivity(Intent(this,FavoriteListActivity::class.java))
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+        return true
+    }
+
+    private fun setUpClickListeners() {
+
+        ivFavourite.setOnClickListener {
+
+            if(!songToPlay.isFavorite)
+                 markAsFavourite (songToPlay)
+        }
+
+        ivShuffle.setOnClickListener { finish() }
 
     }
+
+    private fun getSongById () {
+
+        d("track id ${songToPlay.trackId}")
+        var trackId = songToPlay.trackId
+        songVM.getSongById(songToPlay.trackId).observe(this, Observer {
+
+            Log.d("PlaySong","result $it")
+
+
+            songToPlay.isFavorite = !(it == null || it.isEmpty())
+            updateView(if(it == null) songToPlay else it[0])
+        })
+    }
+
+    private fun updateView(song: SongListResults?) {
+
+        song?.let {
+
+            tvSongName.text = it.trackName
+            tvArtistName.text = "${it.artistName}"
+            Glide.with(this).load(it.artworkUrl100).into(ivSong)
+            ivFavourite.setImageDrawable(if (it.isFavorite) ContextCompat.getDrawable(this, R.drawable.shape_heart_red)
+            else ContextCompat.getDrawable(this, R.drawable.shape_heart))
+
+
+        }
+
+    }
+
 
    private fun initializePlayer() {
 
@@ -150,6 +216,23 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
         }
     }
 
+    //toggle favourite was not the requirement , so only marking facility is there
+    private fun markAsFavourite(favouriteSong : SongListResults) {
+
+        d("mark As favourite called")
+
+        songVM.markAsFavourite(favouriteSong).observe(this, Observer {
+
+         when(it) {
+
+             true -> ivFavourite.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.shape_heart_red))
+             false -> ivFavourite.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.shape_heart))
+         }
+
+        })
+    }
+
+
     public override fun onStart() {
         super.onStart()
         if (Util.SDK_INT > 23) {
@@ -159,6 +242,7 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
 
     public override fun onResume() {
         super.onResume()
+        getSongById()
        // hideSystemUi()
         if (Util.SDK_INT <= 23 || player == null) {
             initializePlayer()

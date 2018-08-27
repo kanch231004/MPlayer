@@ -31,6 +31,22 @@ open class BaseRvAdapter<M,H : RecyclerView.ViewHolder> (private val context: Co
         binder(holder,item,position)
     }
 
+    fun getItemAtPosition(position: Int) : M{
+
+       return items[position]
+    }
+
+    fun removeItemAtPosition(position: Int) {
+
+        items.removeAt(position)
+    }
+
+    fun clearItems( ) {
+
+        items.clear()
+        notifyDataSetChanged()
+    }
+
 
     fun updateItems( results: MutableList<M>){
 

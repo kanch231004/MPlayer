@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main.MainActivity">
+    tools:context=".main.songs.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,8 +26,13 @@
             app:titleTextColor="@color/colorAccent"
             app:title="MPlayer"/>
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+           >
 
-        <EditText
+
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/etSearchSong"
@@ -31,12 +40,32 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:padding="15dp"
+            android:focusable="true"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
             android:transitionName="@string/search_song_hint"
             android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textCursorDrawable="@null"
             android:drawablePadding="10dp"
             android:drawableStart="@drawable/search"
             android:background="@color/colorAccent"
             android:hint="@string/search_song_hint"/>
+
+            <ProgressBar
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/progressBar"
+                android:layout_gravity="end|center_vertical"
+                android:theme="@style/AppTheme.ColorPrimaryAccent"
+                android:layout_marginEnd="20dp"
+                android:visibility="gone"
+                android:layout_marginBottom="5dp"
+
+                android:progressDrawable="@color/colorPrimary"/>
+
+        </FrameLayout>
 
     </LinearLayout>
 
@@ -48,9 +77,7 @@
         android:layout_below="@+id/llAppBar"
         android:gravity="center"
         android:textSize="12sp"
-
         android:layout_marginStart="10dp"
-        android:text="All Songs 24"
         tools:text="All Songs 24"/>
 
 
@@ -71,6 +98,8 @@
         app:tabGravity="center"
         app:tabIndicatorColor="@color/colorTransparent"
         android:id="@+id/tabLayout"/>
+
+    </RelativeLayout>
 
 
 

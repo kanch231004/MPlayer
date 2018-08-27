@@ -1,11 +1,8 @@
-package com.kanch786.musicapp.main
+package com.kanch786.musicapp.main.songs
 
 import android.os.Bundle
-import android.os.HandlerThread
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +12,12 @@ import com.kanch786.musicapp.base.BaseRvAdapter
 import com.kanch786.musicapp.extensions.d
 import com.kanch786.musicapp.viewHolder.SongListViewHolder
 import kotlinx.android.synthetic.main.layout_songs_list.*
-import kotlinx.android.synthetic.main.layout_songs_list.view.*
 
 class NewFragmentInstanceList : Fragment() {
 
     private  var songsList = ArrayList<SongListResults>()
-    private lateinit var songListAdapter : BaseRvAdapter<SongListResults, SongListViewHolder>
+    private  var songListAdapter : BaseRvAdapter<SongListResults, SongListViewHolder>? = null
+
 
     companion object Factory {
 
@@ -35,40 +32,72 @@ class NewFragmentInstanceList : Fragment() {
 
     }
 
+    override fun getUserVisibleHint(): Boolean {
+        super.getUserVisibleHint()
+
+        d("called")
+        songListAdapter?.clearItems()
+        songListAdapter?.notifyDataSetChanged()
+       return true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-      arguments?.let { songsList = arguments?.getSerializable("songsList") as ArrayList<SongListResults> }
+
+        arguments?.let { songsList = arguments?.getSerializable("songsList") as ArrayList<SongListResults> }
 
         d("song list in fragment $songsList")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-       return inflater.inflate(R.layout.layout_songs_list,container,false)
+       val view =  inflater.inflate(R.layout.layout_songs_list,container,false)
+
+        return  view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        d("onActivity Created Called $songsList")
 
         val layoutManager = LinearLayoutManager(context)
         rvSongs.layoutManager = layoutManager
-        songsList?.let {  displaySongList(it)}
+        songListAdapter = rvSongs.adapter as? BaseRvAdapter<SongListResults, SongListViewHolder>
+        songListAdapter?.clearItems()
+
+
+        songsList?.let {
+
+
+            displaySongList(it)
+        }
     }
 
     private fun displaySongList(songList : ArrayList<SongListResults>) {
 
 
-        songListAdapter = BaseRvAdapter(context!!, R.layout.rv_song_items,
-                {
-                    SongListViewHolder(it)
-                },songList, {
+        if (songList.isNotEmpty()) {
+            tvEmptyText.visibility = View.GONE
+            songListAdapter = BaseRvAdapter(context!!, R.layout.rv_song_items,
+                    {
+                        SongListViewHolder(it)
+                    }, songList, {
 
-            holder, songModel, position -> holder.bind(songModel)
+                holder, songModel, position ->
+                holder.bind(songModel,position) {}
 
-        })
+            })
 
-        rvSongs.adapter = songListAdapter
-        songListAdapter.notifyDataSetChanged()
+
+            rvSongs.adapter = songListAdapter
+            songListAdapter?.notifyDataSetChanged()
+        }
+
+        else {
+
+            tvEmptyText.visibility = View.VISIBLE
+            tvEmptyText.text = getString(R.string.no_results)
+        }
 
 
     }

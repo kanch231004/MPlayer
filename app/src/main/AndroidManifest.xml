@@ -11,6 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".ApplicationGlobal"
         android:theme="@style/AppTheme">
         <activity android:name=".LauncherActivity">
             <intent-filter>
@@ -19,9 +20,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.MainActivity" />
-        <activity android:name=".PlaySongActivity" />
-        <activity android:name=".FavoriteListActivity" />
+        <activity android:name=".main.songs.MainActivity"
+            android:windowSoftInputMode="adjustPan|adjustResize|stateAlwaysVisible">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+        </activity>
+        <activity android:name=".main.songs.PlaySongActivity" />
+        <activity android:name=".main.favorites.FavoriteListActivity" />
+
+        <!--
+         <provider
+             android:authorities="com.kanch786.musicapp.searchSuggestion.SongSuggestionProvider"
+             android:name="com.kanch786.musicapp.searchSuggestion.SongSuggestionProvider"/>-->
     </application>
 
 </manifest>
