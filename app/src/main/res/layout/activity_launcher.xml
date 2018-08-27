@@ -22,13 +22,14 @@
             />
 
 
-        <EditText
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/etSearchSong"
             android:layout_marginBottom="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:animateLayoutChanges="true"
             android:padding="15dp"
             android:elevation="5dp"
             android:transitionName="@string/search_song_hint"

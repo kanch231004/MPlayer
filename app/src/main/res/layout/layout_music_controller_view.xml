@@ -1,32 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:background="@color/colorBgGray"
+    xmlns:tools="http://schemas.android.com/tools"
 
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/toolbar"/>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:id="@+id/ivSong"
-        android:layout_marginTop="?actionBarSize"
-        android:scaleType="centerCrop"
-        android:src="@drawable/music_placeholder"/>
-
-    <ProgressBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.exoplayer2.ui.DefaultTimeBar
         android:layout_width="match_parent"
         android:layout_height="7dp"
-        android:layout_below="@+id/ivSong"
-     android:layout_marginStart="20dp"
+
+        android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginTop="20dp"
-
-        android:id="@+id/progressBar"
-        android:progressTint="@color/colorPrimary"
+        app:buffered_color="@color/colorBufferedGray"
+        app:played_color="@color/colorPrimary"
+        android:id="@+id/exo_progress"
+        app:unplayed_color="@color/colorUnplayedGray"
 
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:progress="30"
@@ -36,25 +26,25 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvSpentTime"
+        android:id="@+id/exo_position"
         android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
         tools:text="00:00"
 
-        android:layout_below="@+id/progressBar"
+        android:layout_below="@+id/exo_progress"
         android:textSize="12sp"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvRemainingTime"
+        android:id="@+id/exo_duration"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         tools:text="00:00"
         android:layout_alignParentEnd="true"
 
-        android:layout_below="@+id/progressBar"
+        android:layout_below="@+id/exo_progress"
         android:textSize="12sp"
         />
 
@@ -63,8 +53,16 @@
         android:layout_height="wrap_content"
         android:id="@+id/tvSongName"
         android:layout_centerHorizontal="true"
-        tools:text="Starboy"
-        android:layout_below="@+id/tvSpentTime"
+        tools:text="Starboyskhsglkjgjhlkdskjhg"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:maxLines="2"
+        android:padding="5dp"
+        android:ellipsize="end"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:textAlignment="center"
+        android:layout_below="@+id/exo_duration"
         android:textSize="20sp"
         android:textStyle="bold"/>
 
@@ -73,8 +71,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/tvArtistName"
         android:layout_centerHorizontal="true"
-        tools:text="Daft Punk | The Weekend"
+        tools:text="Daft Punk | The Weekenddjkgksjhglslkghkkjdjhfks"
         android:layout_margin="5dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:textAlignment="center"
         android:layout_below="@+id/tvSongName"
         android:textSize="17sp"
         />
@@ -82,8 +85,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:layout_marginTop="15dp"
-      android:layout_marginStart="30dp"
+        android:layout_marginStart="30dp"
 
         android:layout_marginEnd="30dp"
         android:layout_below="@+id/tvArtistName">
@@ -93,36 +97,54 @@
             android:layout_height="wrap_content"
             android:id="@+id/ivShuffle"
             android:layout_weight="1"
+            android:padding="20dp"
+            android:layout_marginStart="30dp"
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
             android:src="@drawable/combined_shape"/>
-
         <FrameLayout
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:id="@+id/flPlayPause"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/circle_bg_white">
 
-        <ImageView
-           android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/ivPlayPause"
-           android:layout_gravity="center"
-            android:src="@drawable/triangle"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:id="@+id/exo_pause">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               android:layout_gravity="center"
+
+                android:src="@drawable/combined_shape_2"/>
         </FrameLayout>
-        
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:id="@+id/exo_play">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/triangle"/>
+            </FrameLayout>
+
+        </FrameLayout>
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="20dp"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
+            android:layout_marginEnd="30dp"
             android:src="@drawable/shape_heart"
             android:id="@+id/ivFavourite"/>
 
     </RelativeLayout>
-
-
-
 </RelativeLayout>
