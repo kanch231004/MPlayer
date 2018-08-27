@@ -10,18 +10,19 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
-import com.kanch786.musicapp.api.SongListResults
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import com.kanch786.musicapp.R
+import com.kanch786.musicapp.api.SongListResults
 import com.kanch786.musicapp.dataManager.MPlayerDatabase
 import com.kanch786.musicapp.dataManager.dao.SongListDao
 import com.kanch786.musicapp.extensions.d
@@ -96,6 +97,7 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_song)
 
+
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         mPlayerDbInstance = MPlayerDatabase.getInstance(applicationContext)
@@ -105,7 +107,9 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
         setUpClickListeners()
 
         toolbar.setNavigationIcon(R.drawable.arrow_back)
-        songToPlay = intent.getSerializableExtra("songName") as SongListResults
+        songToPlay = intent?.getSerializableExtra("songName") as SongListResults
+        d("song to play received $songToPlay")
+
 
       //  togglePlaying()
 
@@ -137,8 +141,10 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
 
         ivFavourite.setOnClickListener {
 
-            if(!songToPlay.isFavorite)
-                 markAsFavourite (songToPlay)
+            if(!songToPlay.isFavorite) {
+                songToPlay.isFavorite = true
+                markAsFavourite(songToPlay)
+            }
         }
 
         ivShuffle.setOnClickListener { finish() }
@@ -152,10 +158,8 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
         songVM.getSongById(songToPlay.trackId).observe(this, Observer {
 
             Log.d("PlaySong","result $it")
-
-
             songToPlay.isFavorite = !(it == null || it.isEmpty())
-            updateView(if(it == null) songToPlay else it[0])
+            updateView(if(it == null || it.isEmpty()) songToPlay else it[0])
         })
     }
 
@@ -166,6 +170,8 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
             tvSongName.text = it.trackName
             tvArtistName.text = "${it.artistName}"
             Glide.with(this).load(it.artworkUrl100).into(ivSong)
+
+            Log.d("PlaySong","update view ${it.isFavorite}")
             ivFavourite.setImageDrawable(if (it.isFavorite) ContextCompat.getDrawable(this, R.drawable.shape_heart_red)
             else ContextCompat.getDrawable(this, R.drawable.shape_heart))
 
@@ -177,21 +183,24 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
 
    private fun initializePlayer() {
 
+
+       songToPlay.isFavorite = false
       val bandwidthMeter = DefaultBandwidthMeter() //Provides estimates of the currently available bandwidth.
       val  trackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
       val  trackSelector = DefaultTrackSelector(trackSelectionFactory)
-
-
-     player = ExoPlayerFactory.newSimpleInstance(
+       player = ExoPlayerFactory.newSimpleInstance(
                DefaultRenderersFactory(this),
              trackSelector, DefaultLoadControl())
        player?.addListener(this)
-       val uri = Uri.parse(songToPlay.previewUrl)
-       val mediaSource = buildMediaSource(uri)
-       playerView.player = player
-       player?.prepare(mediaSource,true,true)
-       player?.playWhenReady = true
-       playerView.controllerShowTimeoutMs = 0
+       songToPlay.previewUrl?.let {
+           val uri = Uri.parse(songToPlay.previewUrl)
+           val mediaSource = buildMediaSource(uri)
+
+           playerView.player = player
+           player?.prepare(mediaSource, true, true)
+           player?.playWhenReady = true
+           playerView.controllerShowTimeoutMs = 0
+       }
 
    }
 
@@ -221,29 +230,34 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
 
         d("mark As favourite called")
 
-        songVM.markAsFavourite(favouriteSong).observe(this, Observer {
+        songVM.markAsFavourite(favouriteSong) {
 
-         when(it) {
+            if (it)
+                getSongById()
 
-             true -> ivFavourite.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.shape_heart_red))
-             false -> ivFavourite.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.shape_heart))
-         }
+            else Toast.makeText(this,"Error while marking favourite",Toast.LENGTH_SHORT)
 
-        })
+        }
+
     }
 
 
     public override fun onStart() {
         super.onStart()
+
         if (Util.SDK_INT > 23) {
             initializePlayer()
         }
+
     }
 
     public override fun onResume() {
         super.onResume()
-        getSongById()
+
        // hideSystemUi()
+
+
+        getSongById()
         if (Util.SDK_INT <= 23 || player == null) {
             initializePlayer()
         }

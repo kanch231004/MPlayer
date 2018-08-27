@@ -29,12 +29,8 @@ class SongsRepository(private val songDao : SongListDao) {
                     }, {it.printStackTrace()})
     }
 
-    fun markAsFavourite(song : SongListResults) : LiveData<Boolean>{
+    fun markAsFavourite(song : SongListResults, action : (Boolean) -> Unit) {
 
-      return object : LiveData<Boolean>() {
-
-          override fun onActive() {
-              super.onActive()
 
               Observable.fromCallable {
                   songDao.addToFavoriteList(song)
@@ -44,17 +40,17 @@ class SongsRepository(private val songDao : SongListDao) {
                       .observeOn(AndroidSchedulers.mainThread())
                       .subscribe({
 
-                          value = true
+                          action(true)
 
 
                       }, {
-                          value = false
+                          action(false)
                           it.printStackTrace()
 
                       })
-          }
 
-        }
+
+
 
     }
 

@@ -17,11 +17,11 @@ class SongsVM(private val songsRepo : SongsRepository) : ViewModel() {
     private var songListLd: LiveData<List<SongListResults>>? = null
     private var favouriteSongLd: LiveData<List<SongListResults>>? = null
     private var query = ""
+    private var trackId = -1L
 
     fun getSongListResults(receivedQuery: String): LiveData<List<SongListResults>> {
 
 
-        d("receivedquery $receivedQuery query $query")
         if (songListLd == null || receivedQuery != query) {
             query = receivedQuery
 
@@ -32,16 +32,21 @@ class SongsVM(private val songsRepo : SongsRepository) : ViewModel() {
     }
 
 
-    fun markAsFavourite(song : SongListResults) =
+    fun markAsFavourite(song : SongListResults ,action : (Boolean) -> Unit) {
 
-        songsRepo.markAsFavourite(song)
+        songsRepo.markAsFavourite(song,action)
+    }
 
 
 
 
-    fun getSongById(trackId: Long): LiveData<List<SongListResults>> {
+    fun getSongById(receivedTrackId: Long): LiveData<List<SongListResults>> {
 
-        return songsRepo.getSongById(trackId)
+        if (favouriteSongLd == null || trackId != receivedTrackId) {
+            trackId = receivedTrackId
+            favouriteSongLd = songsRepo.getSongById(trackId)
+        }
+        return favouriteSongLd!!
 
     }
 

@@ -235,7 +235,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getSongListResults() {
 
-        songsVM.getSongListResults(query).observe(this, Observer {
+        songsVM.getSongListResults(etSearchSong.text.toString().trim()).observe(this, Observer {
 
 
             progressBar.visibility = View.GONE
