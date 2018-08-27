@@ -8,24 +8,28 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import com.kanch786.musicapp.Constants.SplashScreenTimeout
+import com.kanch786.musicapp.Constants.alphaInvisible
+import com.kanch786.musicapp.Constants.alphaVisisble
+import com.kanch786.musicapp.Constants.etSearchAnimDuration
 import com.kanch786.musicapp.extensions.d
 import com.kanch786.musicapp.main.songs.MainActivity
 import kotlinx.android.synthetic.main.activity_launcher.*
 
 class LauncherActivity : AppCompatActivity() {
 
-    private val SPLASH_TIMEOUT = 2000L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launcher)
 
-        etSearchSong.alpha = 0.0f
+        etSearchSong.alpha = alphaInvisible
         Handler().postDelayed( {
 
-            etSearchSong.animate().alpha(1.0f).duration = 700
+            etSearchSong.animate().alpha(alphaVisisble).duration = etSearchAnimDuration
             etSearchSong.visibility = View.VISIBLE
 
-        },SPLASH_TIMEOUT)
+        }, SplashScreenTimeout)
 
         etSearchSong.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -37,12 +41,9 @@ class LauncherActivity : AppCompatActivity() {
 
             ActivityCompat.startActivity(this, intent, options.toBundle())
 
-            d("startActivity executed")
         }
     }
 
-
-        //etSearchSong.setOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
 
 
 }

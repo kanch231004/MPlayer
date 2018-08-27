@@ -15,25 +15,21 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.kanch786.musicapp.dataManager.MPlayerDatabase
-import com.kanch786.musicapp.dataManager.repo.QueryRepository
 import com.kanch786.musicapp.main.SongsViewModelFactory
 import com.kanch786.musicapp.main.favorites.FavoriteListActivity
 import com.kanch786.musicapp.main.query.QueryVM
 import com.kanch786.musicapp.main.query.QueryViewModelFactory
 import com.kanch786.musicapp.queryRepo
 import com.kanch786.musicapp.songRepo
-import kotlinx.android.synthetic.main.layout_songs_list.*
-import android.content.Context.INPUT_METHOD_SERVICE
-import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
+import com.kanch786.musicapp.Constants.LayoutOffset
+import com.kanch786.musicapp.extensions.hideKeyboard
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var query : String
     private lateinit var songsViewModelFactory: SongsViewModelFactory
     private lateinit var queryViewModelFactory: QueryViewModelFactory
+    private var noOfResultPerScreen = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         setUpSongSuggestion()
+        setNumberOfResultsPerScreen()
 
     }
 
@@ -85,7 +83,6 @@ class MainActivity : AppCompatActivity() {
 
         queryVM.getSuggestionsList().observe(this, Observer {
 
-            d("suggestions list $it")
             ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,it?.toTypedArray())
                     .also {
                         adapter ->
@@ -121,15 +118,12 @@ class MainActivity : AppCompatActivity() {
         val etSearchHeight = etSearchSong.getHeightInDp(displayMetrics)
         val tvCountHeight = tvCount.getHeightInDp(displayMetrics)
 
-        //offset margin 30 given in xml (sum of all the margins)
-        //calculation viewpager available height and dividing with each card size give the no of results which can be accomodated in a screen
-        val viewPagerHeight = (screenSize-(toolbarheight+etSearchHeight+tvCountHeight+(resources.getDimension(R.dimen.tabLayoutHeight)/ displayMetrics.density)+30))
+        val viewPagerHeight = (screenSize-(toolbarheight+etSearchHeight+tvCountHeight+(resources.getDimension(R.dimen.tabLayoutHeight)/ displayMetrics.density)+ LayoutOffset))
+
+        noOfResultPerScreen = ((viewPagerHeight / (resources.getDimension(R.dimen.cvSongsHeightWithMargin)/displayMetrics.density)).toInt())
+        setUpViewPager()
 
 
-        val noOfResultPerScreen : Int =  ((viewPagerHeight / (resources.getDimension(R.dimen.cvSongsHeightWithMargin)/displayMetrics.density)).toInt())
-        setUpViewPager(noOfResultPerScreen)
-        viewPager.adapter = musicAdapter
-        tabLayout.setupWithViewPager(viewPager,true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -153,16 +147,12 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun setUpViewPager(noOfResultPerScreen : Int) {
-
-        d("noOfResult $noOfResultPerScreen")
+    private fun setUpViewPager() {
 
 
-        musicAdapter.printfragments()
         musicAdapter.clearAdapter()
         musicAdapter.notifyDataSetChanged()
 
-        val bundle = Bundle()
         val isPerfectDivisible = songList.size % noOfResultPerScreen == 0
         val noOfFragments = if (isPerfectDivisible) songList.size / noOfResultPerScreen else (songList.size / noOfResultPerScreen) +1
         var startIndex = 0
@@ -176,12 +166,10 @@ class MainActivity : AppCompatActivity() {
             musicAdapter.addFragment(NewFragmentInstanceList.create(ArrayList(songList.subList(startIndex, endIndex))))
         }
 
-
-
-        musicAdapter.printfragments()
+        viewPager.adapter = musicAdapter
+        tabLayout.setupWithViewPager(viewPager,true)
         musicAdapter.notifyDataSetChanged()
 
-       // tabLayout.setupWithViewPager(viewPager)
 
 
     }
@@ -189,8 +177,7 @@ class MainActivity : AppCompatActivity() {
     internal inner class MusicPagerAdapter(fm : FragmentManager ) : FragmentStatePagerAdapter(fm) {
 
         private val fragmentList = ArrayList<Fragment>()
-        var baseId = 31L
-        // private var titleList = ArrayList<String>()
+
 
         override fun getItem(position: Int): Fragment {
 
@@ -206,14 +193,6 @@ class MainActivity : AppCompatActivity() {
             return PagerAdapter.POSITION_NONE
         }
 
-        /* override fun getPageTitle(position: Int): CharSequence? {
-
-             return titleList[position]
-         }*/
-
-        fun printfragments(){
-            d("fragments ${fragmentList}")
-        }
 
         fun addFragment(fragment: Fragment) {
 
@@ -241,13 +220,22 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
            if (it != null && it.isNotEmpty()) {
 
+
+                        hideKeyboard()
                        songList.clear()
                        songList = ArrayList(it)
                        tvCount.text = "All Songs ${it?.size.toString()}"
-                       setNumberOfResultsPerScreen()
+                        setUpViewPager()
+
                    }
 
+            else {
 
+
+               musicAdapter.clearAdapter()
+               musicAdapter.notifyDataSetChanged()
+               tvCount.text = resources.getString(R.string.no_results)
+           }
 
         })
     }

@@ -3,6 +3,7 @@ package com.kanch786.musicapp.dataManager.repo
 import android.arch.lifecycle.LiveData
 import android.util.Log
 import com.kanch786.musicapp.api.ApiInterface
+import com.kanch786.musicapp.api.Resource
 import com.kanch786.musicapp.api.SongListResults
 import com.kanch786.musicapp.dataManager.dao.SongListDao
 import com.kanch786.musicapp.extensions.d
@@ -54,7 +55,7 @@ class SongsRepository(private val songDao : SongListDao) {
 
     }
 
-    fun loadSongResults(query : String) : LiveData<List<SongListResults>> {
+    fun loadSongResults(query : String) : LiveData<List<SongListResults>>{
 
         return object : LiveData<List<SongListResults>>() {
 
@@ -62,28 +63,20 @@ class SongsRepository(private val songDao : SongListDao) {
                 super.onActive()
 
                 Log.d("view model", "onActive called")
-                ApiInterface.create().getSongResultResponse(query, 17)
+                ApiInterface.create().getSongResultResponse(query,50)
 
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 {
 
-                                    if (it.isSuccessful) {
+                                    value = if (it.isSuccessful && it.code() == 200) {it.body()?.results} else { null }
 
-                                        Log.d("view model", "response code ${it.code()}")
-                                        Log.d("view model", "success called ${it.body()?.results} result count ${it.body()?.resultCount}")
-                                        value = it.body()?.results
-
-                                    } else {
-
-                                        Log.d("view model", "error msg ${it.errorBody().toString()}")
-                                    }
                                 }, {
 
-
+                            value = null
                             it.printStackTrace()
-                            d("error message ${it.localizedMessage}")
+
                         })
             }
         }

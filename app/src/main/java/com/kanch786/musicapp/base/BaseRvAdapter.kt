@@ -48,11 +48,5 @@ open class BaseRvAdapter<M,H : RecyclerView.ViewHolder> (private val context: Co
     }
 
 
-    fun updateItems( results: MutableList<M>){
-
-        Log.d("BaseRvAdapter", "items: $items ")
-        items = results
-        notifyDataSetChanged()
-    }
 
 }

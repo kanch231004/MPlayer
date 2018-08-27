@@ -24,17 +24,6 @@ import kotlinx.android.synthetic.main.activity_favourite_songs.*
 class FavoriteListActivity : AppCompatActivity(), RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
-
-       Log.d("FavouriteList","songDeleted ${songListAdapter.getItemAtPosition(viewHolder.adapterPosition)}")
-       Log.d("FavouriteList","songDeleted position ${songListAdapter.getItemAtPosition(position)}")
-        songsVM.removeFromFavourite(songListAdapter.getItemAtPosition(viewHolder.adapterPosition))
-            songListAdapter.removeItemAtPosition(viewHolder.adapterPosition)
-            songListAdapter.notifyItemRemoved(viewHolder.adapterPosition)
-
-
-    }
-
     private  var songsList = ArrayList<SongListResults>()
     private lateinit var songListAdapter : BaseRvAdapter<SongListResults, SongListViewHolder>
     private lateinit var songsVM: SongsVM
@@ -63,6 +52,13 @@ class FavoriteListActivity : AppCompatActivity(), RecyclerItemTouchHelper.Recycl
         getFavouriteList()
 
 
+    }
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
+
+        songsVM.removeFromFavourite(songListAdapter.getItemAtPosition(viewHolder.adapterPosition))
+        songListAdapter.removeItemAtPosition(viewHolder.adapterPosition)
+        songListAdapter.notifyItemRemoved(viewHolder.adapterPosition)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -110,8 +106,6 @@ class FavoriteListActivity : AppCompatActivity(), RecyclerItemTouchHelper.Recycl
             songListAdapter.notifyDataSetChanged()
 
         }
-
-
     }
 
 }

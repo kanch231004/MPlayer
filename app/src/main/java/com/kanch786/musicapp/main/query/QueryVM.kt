@@ -14,7 +14,7 @@ class QueryVM (private val queryRepo : QueryRepository) : ViewModel(){
     private var  suggestionLd : LiveData<List<String>>? = null
 
 
-    fun  insertSuggestions(query : String)  = queryRepo.insertQuery(query)
+  fun  insertSuggestions(query : String)  = queryRepo.insertQuery(query)
 
 
     fun getSuggestionsList() : LiveData<List<String>> {

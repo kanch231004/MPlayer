@@ -26,30 +26,26 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/ivSong"
-        android:layout_weight="1.2"
+        android:layout_weight="1"
         android:scaleType="centerCrop"
         android:src="@drawable/music_placeholder"/>
 
-        <android.support.v4.widget.NestedScrollView
-            android:layout_width="match_parent"
 
-            android:layout_height="0dp"
-            android:layout_weight="0.8">
 
        <com.google.android.exoplayer2.ui.PlayerView
            android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="0dp"
+           android:layout_weight="1"
            app:auto_show="true"
           android:layout_gravity="center_vertical|center_horizontal"
            app:hide_on_touch="false"
            app:show_buffering="true"
            app:use_controller="true"
-           android:background="@color/colorAccent"
+           android:background="@color/colorBgGray"
            android:id="@+id/playerView"
 
            app:controller_layout_id="@layout/layout_music_controller_view"
            />
-        </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
 
 

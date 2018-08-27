@@ -14,8 +14,11 @@ import com.kanch786.musicapp.extensions.getHeightInDp
 import kotlinx.android.synthetic.main.rv_song_items.view.*
 
 var selectedPos = -1
+
+lateinit var selectedItem : SongListResults
 class SongListViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
 
+    var oldView : View? =null
 
     fun bind(songListResults: SongListResults,position : Int,action : (Int) -> Unit) {
 
@@ -26,9 +29,15 @@ class SongListViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
             tvArtistName.text = "${songListResults.artistName } | ${songListResults.collectionName}"
             Glide.with(context).load(songListResults.artworkUrl100).into(ivSong)
 
+
             itemView.setOnClickListener {
+
+                oldView?.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
                 selectedPos = position
+                selectedItem = songListResults
                 itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorHighlightGray))
+                oldView = it
+
 
                 if (songListResults.previewUrl !== null) {
                     val intent = Intent(context, PlaySongActivity::class.java)
@@ -37,11 +46,11 @@ class SongListViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
                 }
 
                 else Toast.makeText(context,"This song preview url is not available",Toast.LENGTH_SHORT).show()
-            }
-            val displayMetrics = resources.displayMetrics
-            d(" height ${cvSongItem.getHeightInDp(displayMetrics)}")
 
-            if(selectedPos == adapterPosition)
+
+            }
+
+            if(selectedPos == position && songListResults == selectedItem)
                 itemView.setBackgroundColor( ContextCompat.getColor(context, R.color.colorHighlightGray))
             else   itemView.setBackgroundColor( ContextCompat.getColor(context, R.color.colorAccent))
 
