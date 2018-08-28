@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-feature android:name="android.hardware.screen.portrait" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +14,8 @@
         android:supportsRtl="true"
         android:name=".ApplicationGlobal"
         android:theme="@style/AppTheme">
-        <activity android:name=".LauncherActivity">
+        <activity android:name=".LauncherActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"
                     android:windowSoftInputMode="adjustNothing"/>
@@ -22,16 +24,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".main.songs.MainActivity"
-        >
+            android:screenOrientation="portrait" />
 
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
-        </activity>
-        <activity android:name=".main.songs.PlaySongActivity" />
-        <activity android:name=".main.favorites.FavoriteListActivity" />
+        <activity android:name=".main.songs.PlaySongActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".main.favorites.FavoriteListActivity"
+            android:screenOrientation="portrait"
+            />
 
     </application>
 

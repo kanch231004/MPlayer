@@ -28,8 +28,13 @@ import com.kanch786.musicapp.main.query.QueryViewModelFactory
 import com.kanch786.musicapp.queryRepo
 import com.kanch786.musicapp.songRepo
 import android.widget.AdapterView
+import android.widget.Toast
 import com.kanch786.musicapp.Constants.LayoutOffset
 import com.kanch786.musicapp.extensions.hideKeyboard
+import com.kanch786.musicapp.R.id.tabLayout
+import android.support.design.widget.TabLayout
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var songsViewModelFactory: SongsViewModelFactory
     private lateinit var queryViewModelFactory: QueryViewModelFactory
     private var noOfResultPerScreen = -1
+    private var seletectedTabPos = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +81,20 @@ class MainActivity : AppCompatActivity() {
 
         setUpSongSuggestion()
         setNumberOfResultsPerScreen()
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        outState?.putInt("tabPosition", seletectedTabPos)
+
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+       tabLayout.getTabAt(savedInstanceState?.getInt("tabPosition") ?: 1)?.select()
+
 
     }
 
@@ -168,7 +188,23 @@ class MainActivity : AppCompatActivity() {
 
         viewPager.adapter = musicAdapter
         tabLayout.setupWithViewPager(viewPager,true)
+        viewPager.currentItem = tabLayout.selectedTabPosition
         musicAdapter.notifyDataSetChanged()
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+              seletectedTabPos = tab?.position ?: 0
+            }
+
+
+        })
 
 
 
@@ -190,7 +226,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun getItemPosition(`object`: Any): Int {
-            return PagerAdapter.POSITION_NONE
+            return PagerAdapter.POSITION_UNCHANGED
+
         }
 
 
@@ -218,24 +255,30 @@ class MainActivity : AppCompatActivity() {
 
 
             progressBar.visibility = View.GONE
-           if (it != null && it.isNotEmpty()) {
+
+            d("results ${it}")
+
+            when {
 
 
-                        hideKeyboard()
-                       songList.clear()
-                       songList = ArrayList(it)
-                       tvCount.text = "All Songs ${it?.size.toString()}"
-                        setUpViewPager()
+               it != null && it.isNotEmpty() -> {
 
-                   }
+                    hideKeyboard()
+                    songList.clear()
+                    songList = ArrayList(it)
+                    tvCount.text = "All Songs ${it?.size.toString()}"
+                    setUpViewPager()
+                }
 
-            else {
+                it != null && it.isEmpty() -> {
 
+                    musicAdapter.clearAdapter()
+                    musicAdapter.notifyDataSetChanged()
+                    tvCount.text = resources.getString(R.string.no_results)
+                }
 
-               musicAdapter.clearAdapter()
-               musicAdapter.notifyDataSetChanged()
-               tvCount.text = resources.getString(R.string.no_results)
-           }
+                else -> { d("do nothing")}
+            }
 
         })
     }

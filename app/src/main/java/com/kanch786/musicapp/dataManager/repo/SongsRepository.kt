@@ -3,7 +3,6 @@ package com.kanch786.musicapp.dataManager.repo
 import android.arch.lifecycle.LiveData
 import android.util.Log
 import com.kanch786.musicapp.api.ApiInterface
-import com.kanch786.musicapp.api.Resource
 import com.kanch786.musicapp.api.SongListResults
 import com.kanch786.musicapp.dataManager.dao.SongListDao
 import com.kanch786.musicapp.extensions.d
@@ -74,7 +73,7 @@ class SongsRepository(private val songDao : SongListDao) {
 
                                 }, {
 
-                            value = null
+
                             it.printStackTrace()
 
                         })
