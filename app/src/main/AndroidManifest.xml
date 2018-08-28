@@ -28,9 +28,12 @@
 
         <activity android:name=".main.songs.PlaySongActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
+
             />
         <activity android:name=".main.favorites.FavoriteListActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
             />
 
     </application>

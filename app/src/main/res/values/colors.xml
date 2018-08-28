@@ -5,7 +5,7 @@
     <color name="colorAccent">#ffffff</color>
 
     <color name="colorBgGray">#f9f9f9</color>
-    <color name="colorHighlightGray">#ecebeb</color>
+    <color name="colorHighlightGray">#f0efef</color>
     <color name="colorBufferedGray">#d9d8d8</color>
     <color name="colorUnplayedGray">#c2c2c2</color>
     <color name="colorTransparent">#00ffffff</color>

@@ -3,5 +3,6 @@
     <string name="launcher_tag">Listen to your favourite \n songs from youtube</string>
     <string name="search_song_hint">Search Music, Title, Artist, Movies etc</string>
     <string name="no_results">No results found</string>
+    <string name="song_not_available">This song preview url is not available</string>
 
 </resources>

@@ -9,6 +9,7 @@ import com.kanch786.musicapp.extensions.d
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.atomic.AtomicBoolean
 
 class SongsRepository(private val songDao : SongListDao) {
 
@@ -48,35 +49,38 @@ class SongsRepository(private val songDao : SongListDao) {
                           it.printStackTrace()
 
                       })
-
-
-
-
     }
 
     fun loadSongResults(query : String) : LiveData<List<SongListResults>>{
 
         return object : LiveData<List<SongListResults>>() {
-
+            var started = AtomicBoolean(false)
             override fun onActive() {
                 super.onActive()
 
                 Log.d("view model", "onActive called")
-                ApiInterface.create().getSongResultResponse(query,50)
 
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                {
+                if (started.compareAndSet(false, true)) {
+                    ApiInterface.create().getSongResultResponse(query, 50)
 
-                                    value = if (it.isSuccessful && it.code() == 200) {it.body()?.results} else { null }
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    {
 
-                                }, {
+                                        value = if (it.isSuccessful && it.code() == 200) {
+                                            it.body()?.results
+                                        } else {
+                                            null
+                                        }
+
+                                    }, {
 
 
-                            it.printStackTrace()
+                                it.printStackTrace()
 
-                        })
+                            })
+                }
             }
         }
 

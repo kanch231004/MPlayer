@@ -25,6 +25,7 @@ class SongsVM(private val songsRepo : SongsRepository) : ViewModel() {
         if (songListLd == null || receivedQuery != query) {
             query = receivedQuery
 
+
             songListLd = songsRepo.loadSongResults(query)
         }
         return songListLd!!

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -13,6 +14,19 @@
         app:navigationIcon="@drawable/arrow_back"
 
         android:id="@+id/toolbar"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvCount"
+        android:layout_margin="7dp"
+        android:layout_below="@+id/llAppBar"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:layout_marginStart="10dp"
+        android:text="No Favorite Song "/>
+
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

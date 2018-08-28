@@ -116,6 +116,13 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
 
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        songToPlay = intent?.getSerializableExtra("songName") as SongListResults
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 
         menuInflater.inflate(R.menu.play_song_menu,menu)
@@ -175,14 +182,12 @@ class PlaySongActivity : AppCompatActivity() , Player.EventListener{
             ivFavourite.setImageDrawable(if (it.isFavorite) ContextCompat.getDrawable(this, R.drawable.shape_heart_red)
             else ContextCompat.getDrawable(this, R.drawable.shape_heart))
 
-
         }
 
     }
 
 
    private fun initializePlayer() {
-
 
        songToPlay.isFavorite = false
       val bandwidthMeter = DefaultBandwidthMeter() //Provides estimates of the currently available bandwidth.

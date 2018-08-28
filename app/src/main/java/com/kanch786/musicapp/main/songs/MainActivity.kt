@@ -93,7 +93,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-       tabLayout.getTabAt(savedInstanceState?.getInt("tabPosition") ?: 1)?.select()
+         seletectedTabPos = savedInstanceState?.getInt("tabPosition") ?: 1
+
+        d("selected tab pos $seletectedTabPos")
+         tabLayout.getTabAt(savedInstanceState?.getInt("tabPosition") ?: 1)?.select()
 
 
     }
@@ -141,7 +144,24 @@ class MainActivity : AppCompatActivity() {
         val viewPagerHeight = (screenSize-(toolbarheight+etSearchHeight+tvCountHeight+(resources.getDimension(R.dimen.tabLayoutHeight)/ displayMetrics.density)+ LayoutOffset))
 
         noOfResultPerScreen = ((viewPagerHeight / (resources.getDimension(R.dimen.cvSongsHeightWithMargin)/displayMetrics.density)).toInt())
-        setUpViewPager()
+        viewPager.adapter = musicAdapter
+        tabLayout.setupWithViewPager(viewPager)
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                seletectedTabPos = tab?.position ?: 0
+            }
+
+
+        })
 
 
     }
@@ -169,10 +189,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpViewPager() {
 
-
         musicAdapter.clearAdapter()
-        musicAdapter.notifyDataSetChanged()
-
         val isPerfectDivisible = songList.size % noOfResultPerScreen == 0
         val noOfFragments = if (isPerfectDivisible) songList.size / noOfResultPerScreen else (songList.size / noOfResultPerScreen) +1
         var startIndex = 0
@@ -183,30 +200,10 @@ class MainActivity : AppCompatActivity() {
             startIndex = endIndex
             endIndex = Math.min(songList.size , (endIndex + noOfResultPerScreen))
 
-            musicAdapter.addFragment(NewFragmentInstanceList.create(ArrayList(songList.subList(startIndex, endIndex))))
+            musicAdapter.addFragment(NewFragmentInstanceList.create(i,ArrayList(songList.subList(startIndex, endIndex))))
         }
 
-        viewPager.adapter = musicAdapter
-        tabLayout.setupWithViewPager(viewPager,true)
-        viewPager.currentItem = tabLayout.selectedTabPosition
         musicAdapter.notifyDataSetChanged()
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-              seletectedTabPos = tab?.position ?: 0
-            }
-
-
-        })
-
-
 
     }
 
@@ -226,7 +223,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun getItemPosition(`object`: Any): Int {
-            return PagerAdapter.POSITION_UNCHANGED
+            return PagerAdapter.POSITION_NONE
 
         }
 
@@ -281,6 +278,15 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        d("selected tab position $seletectedTabPos")
+        viewPager.currentItem = seletectedTabPos
+        tabLayout.setupWithViewPager(viewPager)
+
     }
 
 }

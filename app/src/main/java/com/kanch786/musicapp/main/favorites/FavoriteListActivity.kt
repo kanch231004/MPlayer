@@ -10,15 +10,23 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Toast
 import com.kanch786.musicapp.R
 import com.kanch786.musicapp.api.SongListResults
 import com.kanch786.musicapp.base.BaseRvAdapter
 import com.kanch786.musicapp.base.RecyclerItemTouchHelper
 import com.kanch786.musicapp.dataManager.MPlayerDatabase
 import com.kanch786.musicapp.dataManager.repo.SongsRepository
+import com.kanch786.musicapp.extensions.d
 import com.kanch786.musicapp.main.songs.SongsVM
 import com.kanch786.musicapp.main.SongsViewModelFactory
+import com.kanch786.musicapp.main.songs.PlaySongActivity
+import com.kanch786.musicapp.rx.RxBus
+import com.kanch786.musicapp.rx.RxSongSelectEvent
+import com.kanch786.musicapp.rx.registerInBus
 import com.kanch786.musicapp.viewHolder.SongListViewHolder
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_favourite_songs.*
 
 class FavoriteListActivity : AppCompatActivity(), RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
@@ -29,6 +37,8 @@ class FavoriteListActivity : AppCompatActivity(), RecyclerItemTouchHelper.Recycl
     private lateinit var songsVM: SongsVM
     private lateinit var mPlayerDbInstance  : MPlayerDatabase
     private lateinit var songsViewModelFactory: SongsViewModelFactory
+    private var currentFragmentPos = -1
+    private var oldSeletectedEvent : RxSongSelectEvent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +99,9 @@ class FavoriteListActivity : AppCompatActivity(), RecyclerItemTouchHelper.Recycl
 
     private fun displayFavouriteList(songListResults: MutableList<SongListResults>?) {
 
+
+        songListResults?.let {  tvCount.text = if (songListResults.isNotEmpty()) "All Songs ${songListResults?.size}" else "No Favorite Song"}
+
         songListResults?.let {
 
             songsList = ArrayList(it)
@@ -99,6 +112,9 @@ class FavoriteListActivity : AppCompatActivity(), RecyclerItemTouchHelper.Recycl
 
                 holder.bind(item,position) {
 
+
+                    songListAdapter.notifyDataSetChanged()
+
                 }
             })
 
@@ -106,6 +122,51 @@ class FavoriteListActivity : AppCompatActivity(), RecyclerItemTouchHelper.Recycl
             songListAdapter.notifyDataSetChanged()
 
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        RxBus.observeSticky<RxSongSelectEvent>()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe({
+
+                    d("event received ")
+
+                    if (oldSeletectedEvent != null){
+                        if (oldSeletectedEvent!!.fragmentPosition == currentFragmentPos ){
+
+                            songsList[oldSeletectedEvent!!.adapterPosition].isSelected = false
+                            songListAdapter.notifyItemChanged(oldSeletectedEvent!!.adapterPosition)
+                        }
+                    }
+
+                    if( it.fragmentPosition == currentFragmentPos){
+
+                        songsList[it.adapterPosition].isSelected = true
+                        songListAdapter.notifyItemChanged(it.adapterPosition)
+                        if (songsList[it.adapterPosition].previewUrl !== null) {
+                            val intent = Intent(this, PlaySongActivity::class.java)
+                            intent.putExtra("songName", songsList[it.adapterPosition])
+                            startActivity(intent)
+                        } else Toast.makeText(this, getString(R.string.song_not_available), Toast.LENGTH_SHORT).show()
+
+                    }
+
+                    oldSeletectedEvent = it
+
+
+                    RxBus.sendSticky("")
+                },{
+
+                }).registerInBus(this)
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        RxBus.unregister(this)
     }
 
 }
